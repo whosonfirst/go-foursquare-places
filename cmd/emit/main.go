@@ -1,40 +1,39 @@
 package main
 
 import (
-	"compress/bzip2"
 	"context"
 	"flag"
 	_ "fmt"
 	"log"
 	"log/slog"
-	"os"
 
-	"github.com/aaronland/go-foursquare-places"
+	"github.com/whosonfirst/go-foursquare-places/emitter"
 )
 
 func main() {
+
+	var emitter_uri string
+
+	flag.StringVar(&emitter_uri, "emitter-uri", "", "")
 
 	flag.Parse()
 
 	ctx := context.Background()
 
-	for _, path := range flag.Args() {
+	e, err := emitter.NewEmitter(ctx, emitter_uri)
 
-		r, err := os.Open(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer e.Close()
+
+	for pl, err := range e.Emit(ctx) {
 
 		if err != nil {
-			log.Fatal(err)
+			slog.Error("Failed to yield place", "error", err)
 		}
 
-		br := bzip2.NewReader(r)
-
-		for pl, err := range places.Emit(ctx, br) {
-
-			if err != nil {
-				slog.Error("Failed to yield place", "error", err)
-			}
-
-			slog.Debug("Place", "place", pl)
-		}
+		slog.Info("Place", "place", pl)
 	}
 }

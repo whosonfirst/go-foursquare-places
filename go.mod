@@ -1,8 +1,9 @@
-module github.com/aaronland/go-foursquare-places
+module github.com/whosonfirst/go-foursquare-places
 
 go 1.23.2
 
 require (
+	github.com/aaronland/go-roster v1.0.0
 	github.com/paulmach/orb v0.11.1
 	github.com/sfomuseum/go-csvdict v1.0.0
 	github.com/whosonfirst/go-whosonfirst-spatial v0.11.1
@@ -13,7 +14,6 @@ require (
 	github.com/aaronland/go-brooklynintegers-api v1.2.7 // indirect
 	github.com/aaronland/go-json-query v0.1.5 // indirect
 	github.com/aaronland/go-pool/v2 v2.0.0 // indirect
-	github.com/aaronland/go-roster v1.0.0 // indirect
 	github.com/aaronland/go-string v1.0.0 // indirect
 	github.com/aaronland/go-uid v0.4.0 // indirect
 	github.com/aaronland/go-uid-artisanal v0.0.4 // indirect

@@ -1,21 +1,65 @@
-package places
+package emitter
 
 import (
+	"compress/bzip2"
 	"context"
 	"io"
 	"iter"
 	_ "log/slog"
+	"net/url"
+	"os"
 	"strconv"
 	"strings"
 
 	"github.com/sfomuseum/go-csvdict"
+	"github.com/whosonfirst/go-foursquare-places"
 )
 
-func Emit(ctx context.Context, r io.Reader) iter.Seq2[*Place, error] {
+type CSVEmitter struct {
+	Emitter
+	reader       io.ReadCloser
+	bzip2_reader io.Reader
+}
 
-	return func(yield func(*Place, error) bool) {
+func init() {
 
-		csv_r, err := csvdict.NewReader(r)
+	ctx := context.Background()
+	err := RegisterEmitter(ctx, "csv", NewCSVEmitter)
+
+	if err != nil {
+		panic(err)
+	}
+}
+
+func NewCSVEmitter(ctx context.Context, uri string) (Emitter, error) {
+
+	u, err := url.Parse(uri)
+
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := os.Open(u.Path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	br := bzip2.NewReader(r)
+
+	e := &CSVEmitter{
+		reader:       r,
+		bzip2_reader: br,
+	}
+
+	return e, nil
+}
+
+func (e *CSVEmitter) Emit(ctx context.Context) iter.Seq2[*places.Place, error] {
+
+	return func(yield func(*places.Place, error) bool) {
+
+		csv_r, err := csvdict.NewReader(e.bzip2_reader)
 
 		if err != nil {
 			yield(nil, err)
@@ -49,7 +93,7 @@ func Emit(ctx context.Context, r io.Reader) iter.Seq2[*Place, error] {
 				lon = 0.0
 			}
 
-			pl := &Place{
+			pl := &places.Place{
 				Id:            row["fsq_place_id"],
 				Name:          row["name"],
 				Address:       row["address"],
@@ -71,7 +115,7 @@ func Emit(ctx context.Context, r io.Reader) iter.Seq2[*Place, error] {
 				Longitude:     lon,
 			}
 
-			categories := make([]Category, 0)
+			categories := make([]places.Category, 0)
 
 			str_category_ids := row["fsq_category_ids"]
 			str_category_ids = strings.TrimLeft(str_category_ids, "[")
@@ -88,7 +132,7 @@ func Emit(ctx context.Context, r io.Reader) iter.Seq2[*Place, error] {
 
 				for i, id := range category_ids {
 
-					c := Category{
+					c := places.Category{
 						Id:     id,
 						Labels: strings.Split(category_labels[i], " > "),
 					}
@@ -103,7 +147,7 @@ func Emit(ctx context.Context, r io.Reader) iter.Seq2[*Place, error] {
 
 				for _, id := range category_ids {
 
-					c := Category{
+					c := places.Category{
 						Id: id,
 						// Labels: strings.Split(category_labels[i], " > "),
 					}
@@ -118,4 +162,8 @@ func Emit(ctx context.Context, r io.Reader) iter.Seq2[*Place, error] {
 			yield(pl, nil)
 		}
 	}
+}
+
+func (e *CSVEmitter) Close() error {
+	return e.reader.Close()
 }

@@ -1,18 +1,17 @@
 package main
 
 import (
-	"compress/bzip2"
 	"context"
 	"flag"
 	_ "fmt"
 	"log"
 	"log/slog"
-	"os"
 
-	"github.com/aaronland/go-foursquare-places"
+	// "github.com/aaronland/go-foursquare-places"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
-	"github.com/whosonfirst/go-reader"
+	"github.com/whosonfirst/go-foursquare-places/emitter"
+	// "github.com/whosonfirst/go-reader"
 	"github.com/whosonfirst/go-whosonfirst-spatial/database"
 	"github.com/whosonfirst/go-whosonfirst-spatial/filter"
 	"github.com/whosonfirst/go-whosonfirst-spatial/hierarchy"
@@ -22,14 +21,22 @@ import (
 func main() {
 
 	var spatial_database_uri string
+	var emitter_uri string
 
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "...")
+	flag.StringVar(&emitter_uri, "emitter-uri", "", "")
 
 	flag.Parse()
 
 	ctx := context.Background()
 
-	var data_r reader.Reader
+	e, err := emitter.NewEmitter(ctx, emitter_uri)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer e.Close()
 
 	spatial_db, err := database.NewSpatialDatabase(ctx, spatial_database_uri)
 
@@ -37,8 +44,12 @@ func main() {
 		log.Fatal(err)
 	}
 
-	var inputs *filter.SPRInputs
-	var results_cb hierarchy_filter.FilterSPRResultsFunc
+	defer spatial_db.Close(ctx)
+
+	inputs := &filter.SPRInputs{}
+	inputs.IsCurrent = []int64{1}
+
+	results_cb := hierarchy_filter.FirstButForgivingSPRResultsFunc
 
 	resolver_opts := &hierarchy.PointInPolygonHierarchyResolverOptions{
 		Database: spatial_db,
@@ -46,57 +57,46 @@ func main() {
 
 	resolver, err := hierarchy.NewPointInPolygonHierarchyResolver(ctx, resolver_opts)
 
-	for _, path := range flag.Args() {
-
-		r, err := os.Open(path)
+	for pl, err := range e.Emit(ctx) {
 
 		if err != nil {
-			log.Fatal(err)
+			slog.Error("Failed to yield place", "error", err)
+			continue
 		}
 
-		br := bzip2.NewReader(r)
+		lat := pl.Latitude
+		lon := pl.Longitude
 
-		for pl, err := range places.Emit(ctx, br) {
+		pt := orb.Point([2]float64{lon, lat})
+		f := geojson.NewFeature(pt)
 
-			if err != nil {
-				slog.Error("Failed to yield place", "error", err)
-				continue
-			}
+		f.Properties["wof:id"] = pl.Id
+		f.Properties["wof:name"] = pl.Name
+		f.Properties["wof:placetype"] = "venue"
+		f.Properties["lbl:latitude"] = lat
+		f.Properties["lbl:longitude"] = lon
 
-			lat := pl.Latitude
-			lon := pl.Longitude
+		body, err := f.MarshalJSON()
 
-			pt := orb.Point([2]float64{lon, lat})
-			f := geojson.NewFeature(pt)
-
-			f.Properties["wof:id"] = pl.Id
-			f.Properties["wof:name"] = pl.Name
-			f.Properties["wof:placetype"] = "venue"
-			f.Properties["lbl:latitude"] = lat
-			f.Properties["lbl:longitude"] = lon
-
-			body, err := f.MarshalJSON()
-
-			if err != nil {
-				slog.Error("Failed to marshal JSON", "error", err)
-				continue
-			}
-
-			possible, err := resolver.PointInPolygon(ctx, inputs, body)
-
-			if err != nil {
-				slog.Error("Failed to resolve PIP", "error", err)
-				continue
-			}
-
-			parent_spr, err := results_cb(ctx, data_r, body, possible)
-
-			if err != nil {
-				slog.Error("Failed to process results", "error", err)
-				continue
-			}
-
-			slog.Info("id", pl.Id, "parent", parent_spr.Id)
+		if err != nil {
+			slog.Error("Failed to marshal JSON", "error", err)
+			continue
 		}
+
+		possible, err := resolver.PointInPolygon(ctx, inputs, body)
+
+		if err != nil {
+			slog.Error("Failed to resolve PIP", "error", err)
+			continue
+		}
+
+		parent_spr, err := results_cb(ctx, spatial_db, body, possible)
+
+		if err != nil {
+			slog.Error("Failed to process results", "error", err)
+			continue
+		}
+
+		slog.Info("id", pl.Id, "parent", parent_spr)
 	}
 }
