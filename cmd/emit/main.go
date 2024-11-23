@@ -5,6 +5,8 @@ import (
 	"flag"
 	_ "fmt"
 	"log"
+	"os"
+	"encoding/json"
 	"log/slog"
 
 	"github.com/whosonfirst/go-foursquare-places/emitter"
@@ -14,7 +16,7 @@ func main() {
 
 	var emitter_uri string
 
-	flag.StringVar(&emitter_uri, "emitter-uri", "", "")
+	flag.StringVar(&emitter_uri, "emitter-uri", "", "A registered /whosonfirst/go-foursquare-places/emitter.Emitter URI.")
 
 	flag.Parse()
 
@@ -32,8 +34,14 @@ func main() {
 
 		if err != nil {
 			slog.Error("Failed to yield place", "error", err)
+			continue
 		}
 
-		slog.Info("Place", "place", pl)
+		enc := json.NewEncoder(os.Stdout)
+		err = enc.Encode(pl)
+		
+		if err != nil {
+			slog.Error("Failed to encode place", "error", err)
+		}
 	}
 }

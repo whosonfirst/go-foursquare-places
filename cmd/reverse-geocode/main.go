@@ -29,9 +29,9 @@ func main() {
 	var emitter_uri string
 	var workers int
 
-	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "...")
-	flag.StringVar(&emitter_uri, "emitter-uri", "", "")
-	flag.IntVar(&workers, "workers", 50, "...")
+	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
+	flag.StringVar(&emitter_uri, "emitter-uri", "", "A registered whosonfirst/go-foursquare-places/emitter.Emitter URI.")
+	flag.IntVar(&workers, "workers", 100, "The maximum number of workers to process reverse geocoding tasks.")
 
 	flag.Parse()
 
