@@ -34,6 +34,7 @@ type Place struct {
 	Website       string     `json:"website"`
 	Categories    []Category `json:"categories"`
 }
+```
 
 ### Categories
 
@@ -55,7 +56,7 @@ type Emitter interface {
 	Emit(context.Context) iter.Seq2[*places.Place, error]
 	Close() error
 }
-``
+```
 
 For example:
 
