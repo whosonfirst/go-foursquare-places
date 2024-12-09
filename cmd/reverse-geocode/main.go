@@ -1,45 +1,53 @@
 package main
 
+// This assumes a PMTiles spatial database described here:
+// https://millsfield.sfomuseum.org/blog/2022/12/19/pmtiles-pip/
+
+/*
+
+./bin/reverse-geocode \
+    -workers 5 \
+    -emitter-uri csv:///usr/local/data/4sq/4sq.csv.bz2 \
+    -spatial-database-uri 'pmtiles://?tiles=file:///usr/local/data/pmtiles/&database=whosonfirst-point-in-polygon-z13-20240406&enable-cache=true&pmtiles-cache-size=4096&zoom=13&layer=whosonfirst' 
+
+*/
+
 import (
 	"context"
 	"flag"
-	_ "fmt"
 	"log"
 	"log/slog"
 	"os"
 	"strconv"
 	"strings"
-	"slices"
 	"sync"
+
+	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/sfomuseum/go-csvdict/v2"
 	"github.com/whosonfirst/go-foursquare-places"
-	"github.com/whosonfirst/go-reader"
-	wof_reader "github.com/whosonfirst/go-whosonfirst-reader"	
 	"github.com/whosonfirst/go-foursquare-places/emitter"
-	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
+	"github.com/whosonfirst/go-whosonfirst-feature/properties"
+	wof_reader "github.com/whosonfirst/go-whosonfirst-reader"
 	"github.com/whosonfirst/go-whosonfirst-spatial/database"
 	"github.com/whosonfirst/go-whosonfirst-spatial/filter"
 	"github.com/whosonfirst/go-whosonfirst-spatial/hierarchy"
-	"github.com/whosonfirst/go-whosonfirst-feature/properties"	
 	hierarchy_filter "github.com/whosonfirst/go-whosonfirst-spatial/hierarchy/filter"
 )
 
 func main() {
 
 	var spatial_database_uri string
-	var properties_reader_uri string
-	
+
 	var emitter_uri string
 	var workers int
 
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
-	flag.StringVar(&properties_reader_uri, "properties-reader-uri", "{spatial-database-uri}", "...")
-	
+
 	flag.StringVar(&emitter_uri, "emitter-uri", "", "A registered whosonfirst/go-foursquare-places/emitter.Emitter URI.")
-	flag.IntVar(&workers, "workers", 100, "The maximum number of workers to process reverse geocoding tasks.")
+	flag.IntVar(&workers, "workers", 5, "The maximum number of workers to process reverse geocoding tasks.")
 
 	flag.Parse()
 
@@ -61,29 +69,9 @@ func main() {
 
 	defer spatial_db.Close(ctx)
 
-	var properties_reader reader.Reader
+	// This could be an option but for now it isn't...
+	properties_reader := spatial_db
 
-	if properties_reader_uri != "" {
-
-		use_spatial_uri := "{spatial-database-uri}"
-
-		if properties_reader_uri == use_spatial_uri {
-			properties_reader_uri = spatial_database_uri
-		}
-
-		r, err := reader.NewReader(ctx, properties_reader_uri)
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		properties_reader = r
-	}
-
-	if properties_reader == nil {
-		properties_reader = spatial_db
-	}
-	
 	inputs := &filter.SPRInputs{}
 	inputs.IsCurrent = []int64{1}
 
@@ -105,11 +93,11 @@ func main() {
 	}
 
 	var csv_wr *csvdict.Writer
-	
+
 	i64_to_string := func(i64_list []int64) []string {
 
 		str_list := make([]string, len(i64_list))
-		
+
 		for i, id := range i64_list {
 			str_list[i] = strconv.FormatInt(id, 10)
 		}
@@ -125,28 +113,15 @@ func main() {
 
 		parent_id := int64(-1)
 		belongs_to := make([]int64, 0)
-
-		neighbourhoods := make([]int64, 0)
-		localities := make([]int64, 0)
-		regions := make([]int64, 0)
-		countries := make([]int64, 0)
+		str_hierarchies := ""
 
 		defer func() {
 
-			str_belongs_to := make([]string, len(belongs_to))
-
-			for i, id := range belongs_to {
-				str_belongs_to[i] = strconv.FormatInt(id, 10)
-			}
-
 			out := map[string]string{
-				"4sq:id":         pl.Id,
-				"wof:parent_id":  strconv.FormatInt(parent_id, 10),
-				"wof:belongs_to": i64_to_csv(belongs_to),
-				"wof:neighbourhoods": i64_to_csv(neighbourhoods),
-				"wof:localities": i64_to_csv(localities),
-				"wof:regions": i64_to_csv(regions),
-				"wof:countries": i64_to_csv(countries),				
+				"4sq:id":          pl.Id,
+				"wof:parent_id":   strconv.FormatInt(parent_id, 10),
+				"wof:belongs_to":  i64_to_csv(belongs_to),
+				"wof:hierarchies": str_hierarchies,
 			}
 
 			mu.Lock()
@@ -154,25 +129,14 @@ func main() {
 
 			if csv_wr == nil {
 
-				/*
-				fieldnames := make([]string, 0)
-
-				for k, _ := range out {
-					fieldnames = append(fieldnames, k)
-				}
-
-				wr, err := csvdict.NewWriter(os.Stdout, fieldnames)
-				*/
-
 				wr, err := csvdict.NewWriter(os.Stdout)
-				
+
 				if err != nil {
 					slog.Error("Failed to create CSV writer", "error", err)
 					return
 				}
 
 				csv_wr = wr
-				// csv_wr.WriteHeader()
 			}
 
 			csv_wr.WriteRow(out)
@@ -213,48 +177,57 @@ func main() {
 		}
 
 		if parent_spr != nil {
-		
+
 			p_id, err := strconv.ParseInt(parent_spr.Id(), 10, 64)
 
 			if err != nil {
 				slog.Error("Failed to parse parse parent ID", "id", parent_spr.Id(), "error", err)
 				return err
 			}
-			
+
 			parent_id = p_id
 			belongs_to = parent_spr.BelongsTo()
 
 			parent_body, err := wof_reader.LoadBytes(ctx, properties_reader, p_id)
 
 			if err != nil {
-
+				slog.Warn("Failed to derive record from properties reader", "id", p_id, "error", err)
 			} else {
-				
+
 				hierarchies := properties.Hierarchies(parent_body)
 
-				foo := func(candidates map[string]int64, key string, target []int64) []int64 {
+				candidates := []string{
+					"neighbourhood_id",
+					"locality_id",
+					"region_id",
+					"country_id",
+					"continent_id",
+				}
 
-					id, exists := candidates[key]
+				str_hier := make([]string, len(hierarchies))
 
-					if exists {
+				for i, h := range hierarchies {
 
-						if !slices.Contains(target, id){
-						   target = append(target, id)
+					// colon-separated list
+					hier_csv := make([]string, len(candidates))
+
+					for j, k := range candidates {
+
+						id, exists := h[k]
+						v := ""
+
+						if exists {
+							v = strconv.FormatInt(id, 10)
 						}
+
+						hier_csv[j] = v
 					}
 
-					return target
+					str_hier[i] = strings.Join(hier_csv, ":")
 				}
-				
-				for _, h := range hierarchies {
 
-					neighbourhoods = foo(h, "neighbourhood_id", neighbourhoods)
-					localities = foo(h, "locality_id", localities)
-					regions = foo(h, "region_id", regions)
-					countries = foo(h, "country_id", countries)					
-				}
+				str_hierarchies = strings.Join(str_hier, ",")
 			}
-
 
 		}
 

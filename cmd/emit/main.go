@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	_ "fmt"
 	"log"
-	"os"
-	"encoding/json"
 	"log/slog"
+	"os"
 
 	"github.com/whosonfirst/go-foursquare-places/emitter"
 )
@@ -39,7 +39,7 @@ func main() {
 
 		enc := json.NewEncoder(os.Stdout)
 		err = enc.Encode(pl)
-		
+
 		if err != nil {
 			slog.Error("Failed to encode place", "error", err)
 		}
