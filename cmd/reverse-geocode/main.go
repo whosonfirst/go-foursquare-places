@@ -9,27 +9,35 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"slices"
 	"sync"
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/sfomuseum/go-csvdict"
 	"github.com/whosonfirst/go-foursquare-places"
+	"github.com/whosonfirst/go-reader"
+	wof_reader "github.com/whosonfirst/go-whosonfirst-reader"	
 	"github.com/whosonfirst/go-foursquare-places/emitter"
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
 	"github.com/whosonfirst/go-whosonfirst-spatial/database"
 	"github.com/whosonfirst/go-whosonfirst-spatial/filter"
 	"github.com/whosonfirst/go-whosonfirst-spatial/hierarchy"
+	"github.com/whosonfirst/go-whosonfirst-feature/properties"	
 	hierarchy_filter "github.com/whosonfirst/go-whosonfirst-spatial/hierarchy/filter"
 )
 
 func main() {
 
 	var spatial_database_uri string
+	var properties_reader_uri string
+	
 	var emitter_uri string
 	var workers int
 
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
+	flag.StringVar(&properties_reader_uri, "properties-reader-uri", "{spatial-database-uri}", "...")
+	
 	flag.StringVar(&emitter_uri, "emitter-uri", "", "A registered whosonfirst/go-foursquare-places/emitter.Emitter URI.")
 	flag.IntVar(&workers, "workers", 100, "The maximum number of workers to process reverse geocoding tasks.")
 
@@ -53,6 +61,29 @@ func main() {
 
 	defer spatial_db.Close(ctx)
 
+	var properties_reader reader.Reader
+
+	if properties_reader_uri != "" {
+
+		use_spatial_uri := "{spatial-database-uri}"
+
+		if properties_reader_uri == use_spatial_uri {
+			properties_reader_uri = spatial_database_uri
+		}
+
+		r, err := reader.NewReader(ctx, properties_reader_uri)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		properties_reader = r
+	}
+
+	if properties_reader == nil {
+		properties_reader = spatial_db
+	}
+	
 	inputs := &filter.SPRInputs{}
 	inputs.IsCurrent = []int64{1}
 
@@ -74,11 +105,31 @@ func main() {
 	}
 
 	var csv_wr *csvdict.Writer
+	
+	i64_to_string := func(i64_list []int64) []string {
+
+		str_list := make([]string, len(i64_list))
+		
+		for i, id := range i64_list {
+			str_list[i] = strconv.FormatInt(id, 10)
+		}
+
+		return str_list
+	}
+
+	i64_to_csv := func(i64_list []int64) string {
+		return strings.Join(i64_to_string(i64_list), ",")
+	}
 
 	process_place := func(ctx context.Context, pl *places.Place) error {
 
 		parent_id := int64(-1)
 		belongs_to := make([]int64, 0)
+
+		neighbourhoods := make([]int64, 0)
+		localities := make([]int64, 0)
+		regions := make([]int64, 0)
+		countries := make([]int64, 0)
 
 		defer func() {
 
@@ -91,7 +142,11 @@ func main() {
 			out := map[string]string{
 				"4sq:id":         pl.Id,
 				"wof:parent_id":  strconv.FormatInt(parent_id, 10),
-				"wof:belongs_to": strings.Join(str_belongs_to, ","),
+				"wof:belongs_to": i64_to_csv(belongs_to),
+				"wof:neighbourhoods": i64_to_csv(neighbourhoods),
+				"wof:localities": i64_to_csv(localities),
+				"wof:regions": i64_to_csv(regions),
+				"wof:countries": i64_to_csv(countries),				
 			}
 
 			mu.Lock()
@@ -154,16 +209,49 @@ func main() {
 		}
 
 		if parent_spr != nil {
-
+		
 			p_id, err := strconv.ParseInt(parent_spr.Id(), 10, 64)
 
 			if err != nil {
 				slog.Error("Failed to parse parse parent ID", "id", parent_spr.Id(), "error", err)
 				return err
 			}
-
+			
 			parent_id = p_id
 			belongs_to = parent_spr.BelongsTo()
+
+			parent_body, err := wof_reader.LoadBytes(ctx, properties_reader, p_id)
+
+			if err != nil {
+
+			} else {
+				
+				hierarchies := properties.Hierarchies(parent_body)
+
+				foo := func(candidates map[string]int64, key string, target []int64) []int64 {
+
+					id, exists := candidates[key]
+
+					if exists {
+
+						if !slices.Contains(target, id){
+						   target = append(target, id)
+						}
+					}
+
+					return target
+				}
+				
+				for _, h := range hierarchies {
+
+					neighbourhoods = foo(h, "neighbourhood_id", neighbourhoods)
+					localities = foo(h, "locality_id", localities)
+					regions = foo(h, "region_id", regions)
+					countries = foo(h, "country_id", countries)					
+				}
+			}
+
+
 		}
 
 		return nil
