@@ -14,7 +14,7 @@ import (
 
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
-	"github.com/sfomuseum/go-csvdict"
+	"github.com/sfomuseum/go-csvdict/v2"
 	"github.com/whosonfirst/go-foursquare-places"
 	"github.com/whosonfirst/go-reader"
 	wof_reader "github.com/whosonfirst/go-whosonfirst-reader"	
@@ -154,6 +154,7 @@ func main() {
 
 			if csv_wr == nil {
 
+				/*
 				fieldnames := make([]string, 0)
 
 				for k, _ := range out {
@@ -161,14 +162,17 @@ func main() {
 				}
 
 				wr, err := csvdict.NewWriter(os.Stdout, fieldnames)
+				*/
 
+				wr, err := csvdict.NewWriter(os.Stdout)
+				
 				if err != nil {
 					slog.Error("Failed to create CSV writer", "error", err)
 					return
 				}
 
 				csv_wr = wr
-				csv_wr.WriteHeader()
+				// csv_wr.WriteHeader()
 			}
 
 			csv_wr.WriteRow(out)

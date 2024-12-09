@@ -6,6 +6,10 @@ require (
 	github.com/aaronland/go-roster v1.0.0
 	github.com/paulmach/orb v0.11.1
 	github.com/sfomuseum/go-csvdict v1.0.0
+	github.com/sfomuseum/go-csvdict/v2 v2.0.0
+	github.com/whosonfirst/go-reader v1.0.2
+	github.com/whosonfirst/go-whosonfirst-feature v0.0.28
+	github.com/whosonfirst/go-whosonfirst-reader v1.0.2
 	github.com/whosonfirst/go-whosonfirst-spatial v0.11.1
 	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.4.0
 )
@@ -116,19 +120,16 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
-	github.com/whosonfirst/go-reader v1.0.2 // indirect
 	github.com/whosonfirst/go-rfc-5646 v0.1.0 // indirect
 	github.com/whosonfirst/go-sanitize v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-crawl v0.2.2 // indirect
 	github.com/whosonfirst/go-whosonfirst-export/v2 v2.8.3 // indirect
-	github.com/whosonfirst/go-whosonfirst-feature v0.0.28 // indirect
 	github.com/whosonfirst/go-whosonfirst-flags v0.5.2 // indirect
 	github.com/whosonfirst/go-whosonfirst-format v0.4.1 // indirect
 	github.com/whosonfirst/go-whosonfirst-id v1.2.5 // indirect
 	github.com/whosonfirst/go-whosonfirst-iterate/v2 v2.5.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-names v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3 // indirect
-	github.com/whosonfirst/go-whosonfirst-reader v1.0.2 // indirect
 	github.com/whosonfirst/go-whosonfirst-sources v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.10.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-spr/v2 v2.3.7 // indirect
