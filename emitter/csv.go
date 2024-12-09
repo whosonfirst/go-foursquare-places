@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sfomuseum/go-csvdict"
+	"github.com/sfomuseum/go-csvdict/v2"
 	"github.com/whosonfirst/go-foursquare-places"
 )
 
@@ -66,17 +66,11 @@ func (e *CSVEmitter) Emit(ctx context.Context) iter.Seq2[*places.Place, error] {
 			return
 		}
 
-		for {
-
-			row, err := csv_r.Read()
-
-			if err == io.EOF {
-				break
-			}
+		for row, err := range csv_r.Iterate() {
 
 			if err != nil {
 				yield(nil, err)
-				continue
+				break
 			}
 
 			lat, err := strconv.ParseFloat(row["latitude"], 64)
