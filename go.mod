@@ -4,10 +4,9 @@ go 1.23.2
 
 require (
 	github.com/aaronland/go-roster v1.0.0
+	github.com/mattn/go-sqlite3 v1.14.16
 	github.com/paulmach/orb v0.11.1
-	github.com/sfomuseum/go-csvdict v1.0.0
 	github.com/sfomuseum/go-csvdict/v2 v2.0.0
-	github.com/whosonfirst/go-reader v1.0.2
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.28
 	github.com/whosonfirst/go-whosonfirst-reader v1.0.2
 	github.com/whosonfirst/go-whosonfirst-spatial v0.11.1
@@ -120,6 +119,7 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/whosonfirst/go-ioutil v1.0.2 // indirect
+	github.com/whosonfirst/go-reader v1.0.2 // indirect
 	github.com/whosonfirst/go-rfc-5646 v0.1.0 // indirect
 	github.com/whosonfirst/go-sanitize v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-crawl v0.2.2 // indirect
