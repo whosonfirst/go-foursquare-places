@@ -8,7 +8,7 @@ package main
 ./bin/reverse-geocode \
     -workers 5 \
     -emitter-uri csv:///usr/local/data/4sq/4sq.csv.bz2 \
-    -spatial-database-uri 'pmtiles://?tiles=file:///usr/local/data/pmtiles/&database=whosonfirst-point-in-polygon-z13-20240406&enable-cache=true&pmtiles-cache-size=4096&zoom=13&layer=whosonfirst' 
+    -spatial-database-uri 'pmtiles://?tiles=file:///usr/local/data/pmtiles/&database=whosonfirst-point-in-polygon-z13-20240406&enable-cache=true&pmtiles-cache-size=4096&zoom=13&layer=whosonfirst'
 
 */
 
@@ -29,6 +29,7 @@ import (
 	"github.com/sfomuseum/go-csvdict/v2"
 	"github.com/whosonfirst/go-foursquare-places"
 	"github.com/whosonfirst/go-foursquare-places/emitter"
+	"github.com/whosonfirst/go-reader"
 	"github.com/whosonfirst/go-whosonfirst-feature/properties"
 	wof_reader "github.com/whosonfirst/go-whosonfirst-reader"
 	"github.com/whosonfirst/go-whosonfirst-spatial/database"
@@ -40,14 +41,20 @@ import (
 func main() {
 
 	var spatial_database_uri string
+	var properties_reader_uri string
 
 	var emitter_uri string
 	var workers int
+	var start_after int64
 
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
 
+	flag.StringVar(&properties_reader_uri, "properties-reader-uri", "{spatial-database-uri}", "...")
+
 	flag.StringVar(&emitter_uri, "emitter-uri", "", "A registered whosonfirst/go-foursquare-places/emitter.Emitter URI.")
 	flag.IntVar(&workers, "workers", 5, "The maximum number of workers to process reverse geocoding tasks.")
+
+	flag.Int64Var(&start_after, "start-after", 0, "If > 0 then delay processing for 'start_after' number of records.")
 
 	flag.Parse()
 
@@ -69,8 +76,19 @@ func main() {
 
 	defer spatial_db.Close(ctx)
 
-	// This could be an option but for now it isn't...
-	properties_reader := spatial_db
+	var properties_reader reader.Reader
+	properties_reader = spatial_db
+
+	if properties_reader_uri != "{spatial-database-uri}" {
+
+		r, err := reader.NewReader(ctx, properties_reader_uri)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		properties_reader = r
+	}
 
 	inputs := &filter.SPRInputs{}
 	inputs.IsCurrent = []int64{1}
@@ -234,10 +252,20 @@ func main() {
 		return nil
 	}
 
+	counter := int64(0)
+
 	for pl, err := range e.Emit(ctx) {
+
+		defer func() {
+			counter += 1
+		}()
 
 		if err != nil {
 			slog.Error("Failed to yield place", "error", err)
+			continue
+		}
+
+		if start_after > 0 && start_after > counter {
 			continue
 		}
 
