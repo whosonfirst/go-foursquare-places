@@ -318,6 +318,8 @@ github.com/whosonfirst/go-ioutil v1.0.2 h1:+GJPfa42OFn5A+5yJSc5jQTQIkNV3/MhYyg4p
 github.com/whosonfirst/go-ioutil v1.0.2/go.mod h1:2dS1vWdAIkiHDvDF8fYyjv6k2NISmwaIjJJeEDBEdvg=
 github.com/whosonfirst/go-reader v1.0.2 h1:eccnKKSMGR+X1SJyHUZN0/7qE7VbFQULqSVQU0Su3xs=
 github.com/whosonfirst/go-reader v1.0.2/go.mod h1:2w9l/QusYZSiGuEof3RwCHUFnM492SSOF2H7UxS4YIE=
+github.com/whosonfirst/go-reader-database-sql v0.1.2 h1:gUNmQWmZLLmEBCU4+oaLV0jQsp4wBku1aCYOAfhjNcc=
+github.com/whosonfirst/go-reader-database-sql v0.1.2/go.mod h1:3vPsv6si0cSIi/mNuxyrOZQYXs5lIOVnpFhEMM0xoo4=
 github.com/whosonfirst/go-rfc-5646 v0.1.0 h1:HNFPAem6v5De61PXLgbGzx9tfNOP83AAkVvm9WAddJY=
 github.com/whosonfirst/go-rfc-5646 v0.1.0/go.mod h1:JZj//FV9YeV3fkyOY/82V53EMLQXwRwNPuQIGs8BUmo=
 github.com/whosonfirst/go-sanitize v0.1.0 h1:ygSqCnakwdzH/m8UEa15zXGDsoo5/JJeRkgmAjXZrBU=

@@ -23,7 +23,9 @@ import (
 	"sync"
 
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
-
+	_ "github.com/whosonfirst/go-reader-database-sql"	
+	_ "github.com/mattn/go-sqlite3"
+	
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/sfomuseum/go-csvdict/v2"
