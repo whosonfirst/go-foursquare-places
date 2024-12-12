@@ -22,7 +22,6 @@ import (
 	"strings"
 	"sync"
 
-	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
 
 	"github.com/paulmach/orb"
