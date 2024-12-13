@@ -1,0 +1,2 @@
+// package index provides methods for indexing Who's On First feature records in SQLite databases using the `whosonfirst/go-whosonfirst-sqlite-index` and `whosonfirst/go-whosonfirst-sqlite-features` packages. The `go-whosonfirst-sqlite-index` package indexes SQLite databases using table constucts defined in the `aaronland/go-sqlite` package and records defined by the `whosonfirst/go-whosonfirst-iterate/v2` package
+package index

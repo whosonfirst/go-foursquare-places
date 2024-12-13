@@ -27,6 +27,9 @@ func main() {
 	
 	ctx := context.Background()
 
+	// You can also enable this specific "read function" by passing
+	// ?parse-uri=true to the reader URI below.
+	
 	sql_reader.URI_READFUNC = func(uri string) (string, error) {
 		id, _ := wof_uri.IdFromPath(uri)		
 		str_id := strconv.FormatInt(id, 10)

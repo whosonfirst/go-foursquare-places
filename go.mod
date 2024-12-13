@@ -4,15 +4,18 @@ go 1.23.3
 
 require (
 	github.com/aaronland/go-roster v1.0.0
+	github.com/aaronland/go-sqlite-mattn v0.0.3
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/paulmach/orb v0.11.1
 	github.com/sfomuseum/go-csvdict/v2 v2.0.0
 	github.com/whosonfirst/go-reader v1.0.2
-	github.com/whosonfirst/go-reader-database-sql v0.1.2
+	github.com/whosonfirst/go-reader-database-sql v0.2.0
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.28
+	github.com/whosonfirst/go-whosonfirst-iterate-sql/v2 v2.0.0
 	github.com/whosonfirst/go-whosonfirst-reader v1.0.2
 	github.com/whosonfirst/go-whosonfirst-spatial v0.11.1
 	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.5.0
+	github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2 v2.2.1
 )
 
 require (
@@ -116,6 +119,7 @@ require (
 	github.com/schollz/progressbar/v3 v3.13.1 // indirect
 	github.com/sfomuseum/go-database v0.0.2 // indirect
 	github.com/sfomuseum/go-edtf v1.2.1 // indirect
+	github.com/sfomuseum/go-flags v0.10.0 // indirect
 	github.com/sfomuseum/go-sfomuseum-mapshaper v0.0.3 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
@@ -137,6 +141,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-spr/v2 v2.3.7 // indirect
 	github.com/whosonfirst/go-whosonfirst-sql v0.0.3 // indirect
 	github.com/whosonfirst/go-whosonfirst-sqlite-features/v2 v2.0.3 // indirect
+	github.com/whosonfirst/go-whosonfirst-sqlite-index/v4 v4.0.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-sqlite-spr/v2 v2.0.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-uri v1.3.0 // indirect
 	github.com/whosonfirst/go-writer/v3 v3.1.1 // indirect
@@ -150,14 +155,15 @@ require (
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
 	go.uber.org/ratelimit v0.3.0 // indirect
 	gocloud.dev v0.40.0 // indirect
-	golang.org/x/crypto v0.27.0 // indirect
-	golang.org/x/net v0.29.0 // indirect
+	golang.org/x/crypto v0.28.0 // indirect
+	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/oauth2 v0.23.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.25.0 // indirect
-	golang.org/x/term v0.24.0 // indirect
-	golang.org/x/text v0.18.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/term v0.25.0 // indirect
+	golang.org/x/text v0.19.0 // indirect
 	golang.org/x/time v0.6.0 // indirect
+	golang.org/x/tools v0.26.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9 // indirect
 	google.golang.org/api v0.191.0 // indirect
 	google.golang.org/genproto v0.0.0-20240812133136-8ffd90a71988 // indirect
@@ -169,7 +175,7 @@ require (
 	modernc.org/libc v1.41.0 // indirect
 	modernc.org/mathutil v1.6.0 // indirect
 	modernc.org/memory v1.7.2 // indirect
-	modernc.org/sqlite v1.29.1 // indirect
+	modernc.org/sqlite v1.29.6 // indirect
 	modernc.org/strutil v1.2.0 // indirect
 	modernc.org/token v1.1.0 // indirect
 	zombiezen.com/go/sqlite v1.1.2 // indirect

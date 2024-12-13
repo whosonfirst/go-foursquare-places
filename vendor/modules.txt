@@ -115,6 +115,9 @@ github.com/aaronland/go-pool/v2
 # github.com/aaronland/go-roster v1.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-roster
+# github.com/aaronland/go-sqlite-mattn v0.0.3
+## explicit; go 1.18
+github.com/aaronland/go-sqlite-mattn
 # github.com/aaronland/go-sqlite-modernc v0.0.3
 ## explicit; go 1.18
 github.com/aaronland/go-sqlite-modernc
@@ -560,6 +563,10 @@ github.com/sfomuseum/go-edtf/level2
 github.com/sfomuseum/go-edtf/parser
 github.com/sfomuseum/go-edtf/re
 github.com/sfomuseum/go-edtf/tests
+# github.com/sfomuseum/go-flags v0.10.0
+## explicit; go 1.16
+github.com/sfomuseum/go-flags/flagset
+github.com/sfomuseum/go-flags/multi
 # github.com/sfomuseum/go-sfomuseum-mapshaper v0.0.3
 ## explicit; go 1.22
 github.com/sfomuseum/go-sfomuseum-mapshaper
@@ -581,7 +588,7 @@ github.com/whosonfirst/go-ioutil
 # github.com/whosonfirst/go-reader v1.0.2
 ## explicit; go 1.18
 github.com/whosonfirst/go-reader
-# github.com/whosonfirst/go-reader-database-sql v0.1.2
+# github.com/whosonfirst/go-reader-database-sql v0.2.0
 ## explicit; go 1.23.3
 github.com/whosonfirst/go-reader-database-sql
 # github.com/whosonfirst/go-rfc-5646 v0.1.0
@@ -617,6 +624,9 @@ github.com/whosonfirst/go-whosonfirst-format
 # github.com/whosonfirst/go-whosonfirst-id v1.2.5
 ## explicit; go 1.22
 github.com/whosonfirst/go-whosonfirst-id
+# github.com/whosonfirst/go-whosonfirst-iterate-sql/v2 v2.0.0
+## explicit; go 1.23.3
+github.com/whosonfirst/go-whosonfirst-iterate-sql/v2
 # github.com/whosonfirst/go-whosonfirst-iterate/v2 v2.5.0
 ## explicit; go 1.22
 github.com/whosonfirst/go-whosonfirst-iterate/v2/emitter
@@ -658,10 +668,17 @@ github.com/whosonfirst/go-whosonfirst-spr/v2
 # github.com/whosonfirst/go-whosonfirst-sql v0.0.3
 ## explicit; go 1.21.3
 github.com/whosonfirst/go-whosonfirst-sql/tables
+# github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2 v2.2.1
+## explicit; go 1.22
+github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2
+github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2/app/index
 # github.com/whosonfirst/go-whosonfirst-sqlite-features/v2 v2.0.3
 ## explicit; go 1.21.3
 github.com/whosonfirst/go-whosonfirst-sqlite-features/v2
 github.com/whosonfirst/go-whosonfirst-sqlite-features/v2/tables
+# github.com/whosonfirst/go-whosonfirst-sqlite-index/v4 v4.0.0
+## explicit; go 1.18
+github.com/whosonfirst/go-whosonfirst-sqlite-index/v4
 # github.com/whosonfirst/go-whosonfirst-sqlite-spr/v2 v2.0.0
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-sqlite-spr/v2
@@ -755,7 +772,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/crypto v0.27.0
+# golang.org/x/crypto v0.28.0
 ## explicit; go 1.20
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/chacha20poly1305
@@ -764,7 +781,7 @@ golang.org/x/crypto/cryptobyte/asn1
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
-# golang.org/x/net v0.29.0
+# golang.org/x/net v0.30.0
 ## explicit; go 1.18
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -788,17 +805,17 @@ golang.org/x/oauth2/jwt
 ## explicit; go 1.18
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
-# golang.org/x/sys v0.25.0
+# golang.org/x/sys v0.26.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/windows/registry
-# golang.org/x/term v0.24.0
+# golang.org/x/term v0.25.0
 ## explicit; go 1.18
 golang.org/x/term
-# golang.org/x/text v0.18.0
+# golang.org/x/text v0.19.0
 ## explicit; go 1.18
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
@@ -807,6 +824,8 @@ golang.org/x/text/unicode/norm
 # golang.org/x/time v0.6.0
 ## explicit; go 1.18
 golang.org/x/time/rate
+# golang.org/x/tools v0.26.0
+## explicit; go 1.22.0
 # golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9
 ## explicit; go 1.18
 golang.org/x/xerrors
@@ -990,7 +1009,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.7.2
 ## explicit; go 1.18
 modernc.org/memory
-# modernc.org/sqlite v1.29.1
+# modernc.org/sqlite v1.29.6
 ## explicit; go 1.20
 modernc.org/sqlite
 modernc.org/sqlite/lib

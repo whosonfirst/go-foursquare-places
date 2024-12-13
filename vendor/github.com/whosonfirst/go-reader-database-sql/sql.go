@@ -3,15 +3,16 @@ package reader
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
-	"github.com/whosonfirst/go-ioutil"
-	wof_reader "github.com/whosonfirst/go-reader"
 	"io"
-	_ "log"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
+
+	"github.com/whosonfirst/go-ioutil"
+	wof_reader "github.com/whosonfirst/go-reader"
+	wof_uri "github.com/whosonfirst/go-whosonfirst-uri"
 )
 
 type readFunc func(string) (string, error)
@@ -66,7 +67,7 @@ func NewSQLReader(ctx context.Context, uri string) (wof_reader.Reader, error) {
 	parts := strings.Split(path, "/")
 
 	if len(parts) != 3 {
-		return nil, errors.New("Invalid path")
+		return nil, fmt.Errorf("Invalid path")
 	}
 
 	table := parts[0]
@@ -76,7 +77,7 @@ func NewSQLReader(ctx context.Context, uri string) (wof_reader.Reader, error) {
 	dsn := q.Get("dsn")
 
 	if dsn == "" {
-		return nil, errors.New("Missing dsn parameter")
+		return nil, fmt.Errorf("Missing dsn parameter")
 	}
 
 	conn, err := sql.Open(driver, dsn)
@@ -86,15 +87,38 @@ func NewSQLReader(ctx context.Context, uri string) (wof_reader.Reader, error) {
 	}
 
 	if !VALID_TABLE.MatchString(table) {
-		return nil, errors.New("Invalid table")
+		return nil, fmt.Errorf("Invalid table")
 	}
 
 	if !VALID_KEY.MatchString(key) {
-		return nil, errors.New("Invalid key")
+		return nil, fmt.Errorf("Invalid key")
 	}
 
 	if !VALID_VALUE.MatchString(value) {
-		return nil, errors.New("Invalid value")
+		return nil, fmt.Errorf("Invalid value")
+	}
+
+	if q.Has("parse-uri") {
+
+		v, err := strconv.ParseBool(q.Get("parse-uri"))
+
+		if err != nil {
+			return nil, fmt.Errorf("Failed to parse ?parse-uri= parameter, %w", err)
+		}
+
+		if v {
+
+			URI_READFUNC = func(k string) (string, error) {
+
+				id, _, err := wof_uri.ParseURI(k)
+
+				if err != nil {
+					return "", err
+				}
+
+				return strconv.FormatInt(id, 10), nil
+			}
+		}
 	}
 
 	r := &SQLReader{

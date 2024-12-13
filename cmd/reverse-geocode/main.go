@@ -49,6 +49,8 @@ func main() {
 	var workers int
 	var start_after int64
 
+	var verbose bool
+	
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
 
 	flag.StringVar(&properties_reader_uri, "properties-reader-uri", "{spatial-database-uri}", "...")
@@ -58,8 +60,14 @@ func main() {
 
 	flag.Int64Var(&start_after, "start-after", 0, "If > 0 then delay processing for 'start_after' number of records.")
 
+	flag.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")
+	
 	flag.Parse()
 
+	if verbose {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	}
+	
 	ctx := context.Background()
 
 	e, err := emitter.NewEmitter(ctx, emitter_uri)
