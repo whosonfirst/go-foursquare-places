@@ -15,6 +15,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-reader v1.0.2
 	github.com/whosonfirst/go-whosonfirst-spatial v0.11.1
 	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.5.0
+	github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.10.0
 	github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2 v2.2.1
 )
 
@@ -137,7 +138,6 @@ require (
 	github.com/whosonfirst/go-whosonfirst-names v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3 // indirect
 	github.com/whosonfirst/go-whosonfirst-sources v0.1.0 // indirect
-	github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.10.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-spr/v2 v2.3.7 // indirect
 	github.com/whosonfirst/go-whosonfirst-sql v0.0.3 // indirect
 	github.com/whosonfirst/go-whosonfirst-sqlite-features/v2 v2.0.3 // indirect

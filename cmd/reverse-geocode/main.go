@@ -23,6 +23,7 @@ import (
 	"sync"
 
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
+	_ "github.com/whosonfirst/go-whosonfirst-spatial-sqlite"	
 	_ "github.com/whosonfirst/go-reader-database-sql"	
 	_ "github.com/mattn/go-sqlite3"
 	
@@ -266,9 +267,7 @@ func main() {
 
 	for pl, err := range e.Emit(ctx) {
 
-		defer func() {
-			counter += 1
-		}()
+		counter += 1
 
 		if err != nil {
 			slog.Error("Failed to yield place", "error", err)
@@ -276,6 +275,7 @@ func main() {
 		}
 
 		if start_after > 0 && start_after > counter {
+			slog.Info("Start after throttle", "after", start_after, "count", counter)
 			continue
 		}
 
