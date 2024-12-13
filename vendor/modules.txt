@@ -102,7 +102,7 @@ github.com/aaronland/go-brooklynintegers-api
 # github.com/aaronland/go-json-query v0.1.5
 ## explicit; go 1.22
 github.com/aaronland/go-json-query
-# github.com/aaronland/go-pagination v0.2.0
+# github.com/aaronland/go-pagination v0.3.0
 ## explicit; go 1.16
 github.com/aaronland/go-pagination
 github.com/aaronland/go-pagination/countable
@@ -115,16 +115,6 @@ github.com/aaronland/go-pool/v2
 # github.com/aaronland/go-roster v1.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-roster
-# github.com/aaronland/go-sqlite-mattn v0.0.3
-## explicit; go 1.18
-github.com/aaronland/go-sqlite-mattn
-# github.com/aaronland/go-sqlite-modernc v0.0.3
-## explicit; go 1.18
-github.com/aaronland/go-sqlite-modernc
-# github.com/aaronland/go-sqlite/v2 v2.2.0
-## explicit; go 1.18
-github.com/aaronland/go-sqlite/v2
-github.com/aaronland/go-sqlite/v2/database
 # github.com/aaronland/go-string v1.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-string/dsn
@@ -549,9 +539,9 @@ github.com/schollz/progressbar/v3
 # github.com/sfomuseum/go-csvdict/v2 v2.0.0
 ## explicit; go 1.23
 github.com/sfomuseum/go-csvdict/v2
-# github.com/sfomuseum/go-database v0.0.2
+# github.com/sfomuseum/go-database v0.0.7
 ## explicit; go 1.23.3
-github.com/sfomuseum/go-database
+github.com/sfomuseum/go-database/sql
 # github.com/sfomuseum/go-edtf v1.2.1
 ## explicit; go 1.12
 github.com/sfomuseum/go-edtf
@@ -563,10 +553,7 @@ github.com/sfomuseum/go-edtf/level2
 github.com/sfomuseum/go-edtf/parser
 github.com/sfomuseum/go-edtf/re
 github.com/sfomuseum/go-edtf/tests
-# github.com/sfomuseum/go-flags v0.10.0
-## explicit; go 1.16
-github.com/sfomuseum/go-flags/flagset
-github.com/sfomuseum/go-flags/multi
+github.com/sfomuseum/go-edtf/unix
 # github.com/sfomuseum/go-sfomuseum-mapshaper v0.0.3
 ## explicit; go 1.22
 github.com/sfomuseum/go-sfomuseum-mapshaper
@@ -600,6 +587,9 @@ github.com/whosonfirst/go-sanitize
 # github.com/whosonfirst/go-whosonfirst-crawl v0.2.2
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-crawl
+# github.com/whosonfirst/go-whosonfirst-database v0.0.2
+## explicit; go 1.23.3
+github.com/whosonfirst/go-whosonfirst-database/sql/tables
 # github.com/whosonfirst/go-whosonfirst-export/v2 v2.8.3
 ## explicit; go 1.22
 github.com/whosonfirst/go-whosonfirst-export/v2
@@ -624,9 +614,6 @@ github.com/whosonfirst/go-whosonfirst-format
 # github.com/whosonfirst/go-whosonfirst-id v1.2.5
 ## explicit; go 1.22
 github.com/whosonfirst/go-whosonfirst-id
-# github.com/whosonfirst/go-whosonfirst-iterate-sql/v2 v2.0.0
-## explicit; go 1.23.3
-github.com/whosonfirst/go-whosonfirst-iterate-sql/v2
 # github.com/whosonfirst/go-whosonfirst-iterate/v2 v2.5.0
 ## explicit; go 1.22
 github.com/whosonfirst/go-whosonfirst-iterate/v2/emitter
@@ -654,33 +641,22 @@ github.com/whosonfirst/go-whosonfirst-spatial/filter
 github.com/whosonfirst/go-whosonfirst-spatial/geo
 github.com/whosonfirst/go-whosonfirst-spatial/hierarchy
 github.com/whosonfirst/go-whosonfirst-spatial/hierarchy/filter
-# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.5.0
+# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.5.2
 ## explicit; go 1.23.3
 github.com/whosonfirst/go-whosonfirst-spatial-pmtiles
 github.com/whosonfirst/go-whosonfirst-spatial-pmtiles/cache
-# github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.10.0
-## explicit; go 1.23
+# github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.11.1
+## explicit; go 1.23.3
 github.com/whosonfirst/go-whosonfirst-spatial-sqlite
 github.com/whosonfirst/go-whosonfirst-spatial-sqlite/wkttoorb
+# github.com/whosonfirst/go-whosonfirst-spelunker v0.0.5
+## explicit; go 1.22
+github.com/whosonfirst/go-whosonfirst-spelunker/document
 # github.com/whosonfirst/go-whosonfirst-spr/v2 v2.3.7
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-spr/v2
-# github.com/whosonfirst/go-whosonfirst-sql v0.0.3
-## explicit; go 1.21.3
-github.com/whosonfirst/go-whosonfirst-sql/tables
-# github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2 v2.2.1
-## explicit; go 1.22
-github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2
-github.com/whosonfirst/go-whosonfirst-sqlite-features-index/v2/app/index
-# github.com/whosonfirst/go-whosonfirst-sqlite-features/v2 v2.0.3
-## explicit; go 1.21.3
-github.com/whosonfirst/go-whosonfirst-sqlite-features/v2
-github.com/whosonfirst/go-whosonfirst-sqlite-features/v2/tables
-# github.com/whosonfirst/go-whosonfirst-sqlite-index/v4 v4.0.0
-## explicit; go 1.18
-github.com/whosonfirst/go-whosonfirst-sqlite-index/v4
-# github.com/whosonfirst/go-whosonfirst-sqlite-spr/v2 v2.0.0
-## explicit; go 1.18
+# github.com/whosonfirst/go-whosonfirst-sqlite-spr/v2 v2.1.0
+## explicit; go 1.23.3
 github.com/whosonfirst/go-whosonfirst-sqlite-spr/v2
 # github.com/whosonfirst/go-whosonfirst-uri v1.3.0
 ## explicit; go 1.13
@@ -772,7 +748,7 @@ gocloud.dev/internal/gcerr
 gocloud.dev/internal/oc
 gocloud.dev/internal/openurl
 gocloud.dev/internal/retry
-# golang.org/x/crypto v0.28.0
+# golang.org/x/crypto v0.31.0
 ## explicit; go 1.20
 golang.org/x/crypto/chacha20
 golang.org/x/crypto/chacha20poly1305
@@ -781,7 +757,7 @@ golang.org/x/crypto/cryptobyte/asn1
 golang.org/x/crypto/hkdf
 golang.org/x/crypto/internal/alias
 golang.org/x/crypto/internal/poly1305
-# golang.org/x/net v0.30.0
+# golang.org/x/net v0.29.0
 ## explicit; go 1.18
 golang.org/x/net/http/httpguts
 golang.org/x/net/http2
@@ -801,21 +777,21 @@ golang.org/x/oauth2/google/internal/stsexchange
 golang.org/x/oauth2/internal
 golang.org/x/oauth2/jws
 golang.org/x/oauth2/jwt
-# golang.org/x/sync v0.8.0
+# golang.org/x/sync v0.10.0
 ## explicit; go 1.18
 golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
-# golang.org/x/sys v0.26.0
+# golang.org/x/sys v0.28.0
 ## explicit; go 1.18
 golang.org/x/sys/cpu
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 golang.org/x/sys/windows/registry
-# golang.org/x/term v0.25.0
+# golang.org/x/term v0.27.0
 ## explicit; go 1.18
 golang.org/x/term
-# golang.org/x/text v0.19.0
+# golang.org/x/text v0.21.0
 ## explicit; go 1.18
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
@@ -824,8 +800,6 @@ golang.org/x/text/unicode/norm
 # golang.org/x/time v0.6.0
 ## explicit; go 1.18
 golang.org/x/time/rate
-# golang.org/x/tools v0.26.0
-## explicit; go 1.22.0
 # golang.org/x/xerrors v0.0.0-20240716161551-93cc26a95ae9
 ## explicit; go 1.18
 golang.org/x/xerrors
@@ -1009,7 +983,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.7.2
 ## explicit; go 1.18
 modernc.org/memory
-# modernc.org/sqlite v1.29.6
+# modernc.org/sqlite v1.29.1
 ## explicit; go 1.20
 modernc.org/sqlite
 modernc.org/sqlite/lib

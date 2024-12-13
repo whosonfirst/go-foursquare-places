@@ -492,33 +492,9 @@ func toNamedValues(vals []driver.Value) (r []driver.NamedValue) {
 func (s *stmt) exec(ctx context.Context, args []driver.NamedValue) (r driver.Result, err error) {
 	var pstmt uintptr
 	var done int32
-	if ctx != nil {
-		if ctxDone := ctx.Done(); ctxDone != nil {
-			select {
-			case <-ctxDone:
-				return nil, ctx.Err()
-			default:
-			}
-			defer interruptOnDone(ctx, s.c, &done)()
-		}
+	if ctx != nil && ctx.Done() != nil {
+		defer interruptOnDone(ctx, s.c, &done)()
 	}
-
-	defer func() {
-		if pstmt != 0 {
-			// ensure stmt finalized.
-			e := s.c.finalize(pstmt)
-
-			if err == nil && e != nil {
-				// prioritize original
-				// returned error.
-				err = e
-			}
-		}
-
-		if ctx != nil && atomic.LoadInt32(&done) != 0 {
-			r, err = nil, ctx.Err()
-		}
-	}()
 
 	for psql := s.psql; *(*byte)(unsafe.Pointer(psql)) != 0 && atomic.LoadInt32(&done) == 0; {
 		if pstmt, err = s.c.prepareV2(&psql); err != nil {
@@ -556,7 +532,7 @@ func (s *stmt) exec(ctx context.Context, args []driver.NamedValue) (r driver.Res
 
 			switch rc & 0xff {
 			case sqlite3.SQLITE_DONE, sqlite3.SQLITE_ROW:
-				r, err = newResult(s.c)
+				// nop
 			default:
 				return s.c.errstr(int32(rc))
 			}
@@ -564,12 +540,7 @@ func (s *stmt) exec(ctx context.Context, args []driver.NamedValue) (r driver.Res
 			return nil
 		}()
 
-		e := s.c.finalize(pstmt)
-		pstmt = 0 // done with
-
-		if err == nil && e != nil {
-			// prioritize original
-			// returned error.
+		if e := s.c.finalize(pstmt); e != nil && err == nil {
 			err = e
 		}
 
@@ -577,7 +548,7 @@ func (s *stmt) exec(ctx context.Context, args []driver.NamedValue) (r driver.Res
 			return nil, err
 		}
 	}
-	return r, err
+	return newResult(s.c)
 }
 
 // NumInput returns the number of placeholder parameters.
@@ -605,34 +576,14 @@ func (s *stmt) Query(args []driver.Value) (driver.Rows, error) { //TODO StmtQuer
 func (s *stmt) query(ctx context.Context, args []driver.NamedValue) (r driver.Rows, err error) {
 	var pstmt uintptr
 	var done int32
-	if ctx != nil {
-		if ctxDone := ctx.Done(); ctxDone != nil {
-			select {
-			case <-ctxDone:
-				return nil, ctx.Err()
-			default:
-			}
-			defer interruptOnDone(ctx, s.c, &done)()
-		}
+	if ctx != nil && ctx.Done() != nil {
+		defer interruptOnDone(ctx, s.c, &done)()
 	}
 
 	var allocs []uintptr
 
 	defer func() {
-		if pstmt != 0 {
-			// ensure stmt finalized.
-			e := s.c.finalize(pstmt)
-
-			if err == nil && e != nil {
-				// prioritize original
-				// returned error.
-				err = e
-			}
-		}
-
-		if ctx != nil && atomic.LoadInt32(&done) != 0 {
-			r, err = nil, ctx.Err()
-		} else if r == nil && err == nil {
+		if r == nil && err == nil {
 			r, err = newRows(s.c, pstmt, allocs, true)
 		}
 	}()
@@ -700,13 +651,7 @@ func (s *stmt) query(ctx context.Context, args []driver.NamedValue) (r driver.Ro
 			}
 			return nil
 		}()
-
-		e := s.c.finalize(pstmt)
-		pstmt = 0 // done with
-
-		if err == nil && e != nil {
-			// prioritize original
-			// returned error.
+		if e := s.c.finalize(pstmt); e != nil && err == nil {
 			err = e
 		}
 
@@ -1902,21 +1847,6 @@ func (b *Backup) Finish() error {
 type ExecQuerierContext interface {
 	driver.ExecerContext
 	driver.QueryerContext
-}
-
-// Commit releases all resources associated with the Backup object but does not
-// close the destination database connection.
-//
-// The destination database connection is returned to the caller or an error if raised.
-// It is the responsibility of the caller to handle the connection closure.
-func (b *Backup) Commit() (driver.Conn, error) {
-	rc := sqlite3.Xsqlite3_backup_finish(b.srcConn.tls, b.pBackup)
-
-	if rc == sqlite3.SQLITE_OK {
-		return b.dstConn, nil
-	} else {
-		return nil, b.srcConn.errstr(rc)
-	}
 }
 
 // ConnectionHookFn function type for a connection hook on the Driver. Connection
