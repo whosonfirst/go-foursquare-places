@@ -115,13 +115,6 @@ github.com/aaronland/go-pool/v2
 # github.com/aaronland/go-roster v1.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-roster
-# github.com/aaronland/go-sqlite-mattn v0.0.3
-## explicit; go 1.18
-github.com/aaronland/go-sqlite-mattn
-# github.com/aaronland/go-sqlite/v2 v2.2.0
-## explicit; go 1.18
-github.com/aaronland/go-sqlite/v2
-github.com/aaronland/go-sqlite/v2/database
 # github.com/aaronland/go-string v1.0.0
 ## explicit; go 1.16
 github.com/aaronland/go-string/dsn

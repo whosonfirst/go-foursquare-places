@@ -4,7 +4,6 @@ go 1.23.3
 
 require (
 	github.com/aaronland/go-roster v1.0.0
-	github.com/aaronland/go-sqlite-mattn v0.0.3
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/paulmach/orb v0.11.1
 	github.com/sfomuseum/go-csvdict/v2 v2.0.0
@@ -40,7 +39,6 @@ require (
 	github.com/aaronland/go-pagination v0.3.0 // indirect
 	github.com/aaronland/go-pagination-sql v0.2.0 // indirect
 	github.com/aaronland/go-pool/v2 v2.0.0 // indirect
-	github.com/aaronland/go-sqlite/v2 v2.2.0 // indirect
 	github.com/aaronland/go-string v1.0.0 // indirect
 	github.com/aaronland/go-uid v0.4.0 // indirect
 	github.com/aaronland/go-uid-artisanal v0.0.4 // indirect
