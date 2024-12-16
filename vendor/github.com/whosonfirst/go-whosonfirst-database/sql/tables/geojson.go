@@ -145,43 +145,13 @@ func (t *GeoJSONTable) IndexFeature(ctx context.Context, db *sql.DB, f []byte) e
 		return database_sql.BeginTransactionError(t, err)
 	}
 
-	str_body := string(f)
+	sql := fmt.Sprintf(`INSERT OR REPLACE INTO %s (
+		id, body, source, is_alt, alt_label, lastmodified
+	) VALUES (
+		?, ?, ?, ?, ?, ?
+	)`, t.Name())
 
-	var q string
-
-	args := []any{
-		id,
-		str_body,
-		source,
-		is_alt,
-		alt_label,
-		lastmod,
-	}
-
-	switch database_sql.Driver(db) {
-	case database_sql.POSTGRES_DRIVER:
-
-		q = fmt.Sprintf(`INSERT INTO %s (
-			id, body, source, is_alt, alt_label, lastmodified
-		) VALUES (
-			$1, $2, $3, $4, $5, $6
-		) ON CONFLICT (id, alt_label) DO UPDATE SET
-			body = EXCLUDED.body,
-			source = EXCLUDED.source,
-			is_alt = EXCLUDED.is_alt,
-			lastmodified = EXCLUDED.lastmodified`, t.Name())
-
-	default:
-
-		q = fmt.Sprintf(`INSERT OR REPLACE INTO %s (
-			id, body, source, is_alt, alt_label, lastmodified
-		) VALUES (
-			?, ?, ?, ?, ?, ?
-		)`, t.Name())
-
-	}
-
-	stmt, err := tx.Prepare(q)
+	stmt, err := tx.Prepare(sql)
 
 	if err != nil {
 		return database_sql.PrepareStatementError(t, err)
@@ -189,7 +159,9 @@ func (t *GeoJSONTable) IndexFeature(ctx context.Context, db *sql.DB, f []byte) e
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(args...)
+	str_body := string(f)
+
+	_, err = stmt.Exec(id, str_body, source, is_alt, alt_label, lastmod)
 
 	if err != nil {
 		return database_sql.ExecuteStatementError(t, err)

@@ -9,14 +9,10 @@ require (
 	github.com/sfomuseum/go-csvdict/v2 v2.0.0
 	github.com/whosonfirst/go-reader v1.0.2
 	github.com/whosonfirst/go-reader-database-sql v0.2.0
-	github.com/whosonfirst/go-whosonfirst-database v0.0.7
-	github.com/whosonfirst/go-whosonfirst-database-postgres v0.0.3
 	github.com/whosonfirst/go-whosonfirst-feature v0.0.28
-	github.com/whosonfirst/go-whosonfirst-iterate-sql/v2 v2.0.0
 	github.com/whosonfirst/go-whosonfirst-reader v1.0.2
 	github.com/whosonfirst/go-whosonfirst-spatial v0.11.1
-	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.5.2
-	github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.11.1
+	github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.6.0
 )
 
 require (
@@ -97,7 +93,6 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtacoma/uritemplates v1.0.0 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
@@ -117,9 +112,8 @@ require (
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/schollz/progressbar/v3 v3.13.1 // indirect
-	github.com/sfomuseum/go-database v0.0.10 // indirect
+	github.com/sfomuseum/go-database v0.0.7 // indirect
 	github.com/sfomuseum/go-edtf v1.2.1 // indirect
-	github.com/sfomuseum/go-flags v0.10.0 // indirect
 	github.com/sfomuseum/go-sfomuseum-mapshaper v0.0.3 // indirect
 	github.com/tidwall/gjson v1.18.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
@@ -129,6 +123,7 @@ require (
 	github.com/whosonfirst/go-rfc-5646 v0.1.0 // indirect
 	github.com/whosonfirst/go-sanitize v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-crawl v0.2.2 // indirect
+	github.com/whosonfirst/go-whosonfirst-database v0.0.2 // indirect
 	github.com/whosonfirst/go-whosonfirst-export/v2 v2.8.3 // indirect
 	github.com/whosonfirst/go-whosonfirst-flags v0.5.2 // indirect
 	github.com/whosonfirst/go-whosonfirst-format v0.4.1 // indirect
@@ -137,6 +132,7 @@ require (
 	github.com/whosonfirst/go-whosonfirst-names v0.1.0 // indirect
 	github.com/whosonfirst/go-whosonfirst-placetypes v0.7.3 // indirect
 	github.com/whosonfirst/go-whosonfirst-sources v0.1.0 // indirect
+	github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.11.1 // indirect
 	github.com/whosonfirst/go-whosonfirst-spelunker v0.0.5 // indirect
 	github.com/whosonfirst/go-whosonfirst-spr/v2 v2.3.7 // indirect
 	github.com/whosonfirst/go-whosonfirst-sqlite-spr/v2 v2.1.0 // indirect

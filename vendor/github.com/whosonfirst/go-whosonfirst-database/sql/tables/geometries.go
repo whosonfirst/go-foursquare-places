@@ -139,8 +139,6 @@ func (t *GeometriesTable) IndexFeature(ctx context.Context, db *sql.DB, f []byte
 
 	lastmod := properties.LastModified(f)
 
-	db_driver := database_sql.Driver(db)
-
 	tx, err := db.Begin()
 
 	if err != nil {
@@ -157,31 +155,13 @@ func (t *GeometriesTable) IndexFeature(ctx context.Context, db *sql.DB, f []byte
 
 	str_wkt := wkt.MarshalString(orb_geom)
 
-	var insert_q string
+	sql := fmt.Sprintf(`INSERT OR REPLACE INTO %s (
+		id, is_alt, alt_label, type, geom, lastmodified
+	) VALUES (
+		?, ?, ?, ?, GeomFromText('%s', 4326), ?
+	)`, t.Name(), str_wkt)
 
-	switch db_driver {
-	case database_sql.POSTGRES_DRIVER:
-
-		insert_q = fmt.Sprintf(`INSERT INTO %s (
-			id, is_alt, alt_label, type, geometry, lastmodified
-		) VALUES (
-			$1, $2, $3, $4, ST_GeomFromText('%s', 4326), $5
-		) ON CONFLICT(id, alt_label) DO UPDATE SET
-			is_alt = EXCLUDED.is_alt,
-			type = EXCLUDED.type,
-			geometry = EXCLUDED.geometry,
-			lastmodified = EXCLUDED.lastmodified`, t.Name(), str_wkt)
-
-	default:
-
-		insert_q = fmt.Sprintf(`INSERT OR REPLACE INTO %s (
-			id, is_alt, alt_label, type, geom, lastmodified
-		) VALUES (
-			?, ?, ?, ?, GeomFromText('%s', 4326), ?
-		)`, t.Name(), str_wkt)
-	}
-
-	stmt, err := tx.Prepare(insert_q)
+	stmt, err := tx.Prepare(sql)
 
 	if err != nil {
 		return database_sql.PrepareStatementError(t, err)

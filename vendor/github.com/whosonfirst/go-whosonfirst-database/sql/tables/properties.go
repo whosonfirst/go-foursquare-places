@@ -127,38 +127,19 @@ func (t *PropertiesTable) IndexFeature(ctx context.Context, db *sql.DB, f []byte
 
 	lastmod := properties.LastModified(f)
 
-	db_driver := database_sql.Driver(db)
-
 	tx, err := db.Begin()
 
 	if err != nil {
 		return database_sql.BeginTransactionError(t, err)
 	}
 
-	var insert_q string
+	sql := fmt.Sprintf(`INSERT OR REPLACE INTO %s (
+		id, body, is_alt, alt_label, lastmodified
+	) VALUES (
+		?, ?, ?, ?, ?
+	)`, t.Name())
 
-	switch db_driver {
-	case database_sql.POSTGRES_DRIVER:
-
-		insert_q = fmt.Sprintf(`INSERT INTO %s (
-			id, body, is_alt, alt_label, lastmodified
-		) VALUES (
-			$1, $2, $3, $4, $5
-		) ON CONFLICT(id, alt_label) DO UPDATE SET
-			body = EXCLUDED.body,
-			is_alt = EXCLUDED.is_alt,
-			lastmodified = EXCLUDED.lastmodified`, t.Name())
-
-	default:
-
-		insert_q = fmt.Sprintf(`INSERT OR REPLACE INTO %s (
-			id, body, is_alt, alt_label, lastmodified
-		) VALUES (
-			?, ?, ?, ?, ?
-		)`, t.Name())
-	}
-
-	stmt, err := tx.Prepare(insert_q)
+	stmt, err := tx.Prepare(sql)
 
 	if err != nil {
 		return database_sql.PrepareStatementError(t, err)

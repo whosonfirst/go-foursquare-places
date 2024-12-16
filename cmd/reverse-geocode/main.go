@@ -23,7 +23,7 @@ import (
 	"sync"
 
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
-	_ "github.com/whosonfirst/go-whosonfirst-spatial-sqlite"	
+	// _ "github.com/whosonfirst/go-whosonfirst-spatial-sqlite"	
 	_ "github.com/whosonfirst/go-reader-database-sql"	
 	_ "github.com/mattn/go-sqlite3"
 	

@@ -73,8 +73,6 @@ func (t *ConcordancesTable) IndexFeature(ctx context.Context, db *sql.DB, f []by
 		return nil
 	}
 
-	db_driver := database_sql.Driver(db)
-
 	id, err := properties.Id(f)
 
 	if err != nil {
@@ -87,16 +85,9 @@ func (t *ConcordancesTable) IndexFeature(ctx context.Context, db *sql.DB, f []by
 		return database_sql.BeginTransactionError(t, err)
 	}
 
-	var delete_q string
+	sql := fmt.Sprintf(`DELETE FROM %s WHERE id = ?`, t.Name())
 
-	switch db_driver {
-	case database_sql.POSTGRES_DRIVER:
-		delete_q = fmt.Sprintf(`DELETE FROM %s WHERE id = $1`, t.Name())
-	default:
-		delete_q = fmt.Sprintf(`DELETE FROM %s WHERE id = ?`, t.Name())
-	}
-
-	stmt, err := tx.Prepare(delete_q)
+	stmt, err := tx.Prepare(sql)
 
 	if err != nil {
 		return database_sql.PrepareStatementError(t, err)
@@ -115,29 +106,13 @@ func (t *ConcordancesTable) IndexFeature(ctx context.Context, db *sql.DB, f []by
 
 	for other_source, other_id := range concordances {
 
-		var insert_q string
-
-		switch db_driver {
-		case database_sql.POSTGRES_DRIVER:
-
-			insert_q = fmt.Sprintf(`INSERT INTO %s (
-				id, other_id, other_source, lastmodified
-			) VALUES (
-			  	 $1, $2, $3, $4
-			) ON CONFLICT(id, other_source) DO UPDATE SET
-				other_id = EXCLUDED.other_id,
-				lastmodified = EXCLUDED.lastmodified`, t.Name())
-
-		default:
-
-			insert_q = fmt.Sprintf(`INSERT OR REPLACE INTO %s (
+		sql := fmt.Sprintf(`INSERT OR REPLACE INTO %s (
 				id, other_id, other_source, lastmodified
 			) VALUES (
 			  	 ?, ?, ?, ?
 			)`, t.Name())
-		}
 
-		stmt, err := tx.Prepare(insert_q)
+		stmt, err := tx.Prepare(sql)
 
 		if err != nil {
 			return database_sql.PrepareStatementError(t, err)
