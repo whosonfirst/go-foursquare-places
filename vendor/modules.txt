@@ -539,7 +539,7 @@ github.com/schollz/progressbar/v3
 # github.com/sfomuseum/go-csvdict/v2 v2.0.0
 ## explicit; go 1.23
 github.com/sfomuseum/go-csvdict/v2
-# github.com/sfomuseum/go-database v0.0.7
+# github.com/sfomuseum/go-database v0.0.10
 ## explicit; go 1.23.3
 github.com/sfomuseum/go-database/sql
 # github.com/sfomuseum/go-edtf v1.2.1
@@ -641,7 +641,7 @@ github.com/whosonfirst/go-whosonfirst-spatial/filter
 github.com/whosonfirst/go-whosonfirst-spatial/geo
 github.com/whosonfirst/go-whosonfirst-spatial/hierarchy
 github.com/whosonfirst/go-whosonfirst-spatial/hierarchy/filter
-# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.6.0
+# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.6.2
 ## explicit; go 1.23.3
 github.com/whosonfirst/go-whosonfirst-spatial-pmtiles
 github.com/whosonfirst/go-whosonfirst-spatial-pmtiles/cache
@@ -949,7 +949,7 @@ google.golang.org/protobuf/types/known/timestamppb
 # modernc.org/gc/v3 v3.0.0-20240107210532-573471604cb6
 ## explicit; go 1.20
 modernc.org/gc/v3
-# modernc.org/libc v1.41.0
+# modernc.org/libc v1.55.3
 ## explicit; go 1.20
 modernc.org/libc
 modernc.org/libc/errno
@@ -980,11 +980,11 @@ modernc.org/libc/wctype
 # modernc.org/mathutil v1.6.0
 ## explicit; go 1.18
 modernc.org/mathutil
-# modernc.org/memory v1.7.2
+# modernc.org/memory v1.8.0
 ## explicit; go 1.18
 modernc.org/memory
-# modernc.org/sqlite v1.29.1
-## explicit; go 1.20
+# modernc.org/sqlite v1.34.2
+## explicit; go 1.21
 modernc.org/sqlite
 modernc.org/sqlite/lib
 # modernc.org/strutil v1.2.0

@@ -21,9 +21,10 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-
+	"runtime"
+	"runtime/pprof"
+	
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
-	// _ "github.com/whosonfirst/go-whosonfirst-spatial-sqlite"	
 	_ "github.com/whosonfirst/go-reader-database-sql"	
 	_ "github.com/mattn/go-sqlite3"
 	
@@ -85,7 +86,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	defer spatial_db.Close(ctx)
+	defer spatial_db.Disconnect(ctx)
 
 	var properties_reader reader.Reader
 	properties_reader = spatial_db
@@ -299,4 +300,9 @@ func main() {
 	}
 
 	wg.Wait()
+
+	f, _ := os.Create("memprofile.pb.gz")
+	defer f.Close()
+	runtime.GC()
+	pprof.WriteHeapProfile(f);
 }
