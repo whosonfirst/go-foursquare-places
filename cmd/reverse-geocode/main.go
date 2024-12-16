@@ -275,7 +275,7 @@ func main() {
 		}
 
 		if start_after > 0 && start_after > counter {
-			slog.Info("Start after throttle", "after", start_after, "count", counter)
+			slog.Debug("Start after throttle", "after", start_after, "count", counter)
 			continue
 		}
 
