@@ -18,16 +18,16 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"runtime"
+	"runtime/pprof"
 	"strconv"
 	"strings"
 	"sync"
-	"runtime"
-	"runtime/pprof"
-	
-	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
-	_ "github.com/whosonfirst/go-reader-database-sql"	
+
 	_ "github.com/mattn/go-sqlite3"
-	
+	_ "github.com/whosonfirst/go-reader-database-sql"
+	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
+
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/sfomuseum/go-csvdict/v2"
@@ -51,8 +51,9 @@ func main() {
 	var workers int
 	var start_after int64
 
+	var profile bool
 	var verbose bool
-	
+
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
 
 	flag.StringVar(&properties_reader_uri, "properties-reader-uri", "{spatial-database-uri}", "...")
@@ -63,13 +64,37 @@ func main() {
 	flag.Int64Var(&start_after, "start-after", 0, "If > 0 then delay processing for 'start_after' number of records.")
 
 	flag.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")
-	
+	flag.BoolVar(&profile, "profile", false, "Enable pprof profiling.")
+
 	flag.Parse()
+
+	if profile {
+
+		cpu_f, _ := os.Create("memprofile.pb.gz")
+		defer cpu_f.Close()
+
+		err := pprof.StartCPUProfile(cpu_f)
+
+		if err != nil {
+			log.Fatal("could not start CPU profile: ", err)
+		}
+
+		defer func() {
+
+			pprof.StopCPUProfile()
+
+			f, _ := os.Create("memprofile.pb.gz")
+			defer f.Close()
+			runtime.GC()
+			pprof.WriteHeapProfile(f)
+
+		}()
+	}
 
 	if verbose {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 	}
-	
+
 	ctx := context.Background()
 
 	e, err := emitter.NewEmitter(ctx, emitter_uri)
@@ -301,8 +326,4 @@ func main() {
 
 	wg.Wait()
 
-	f, _ := os.Create("memprofile.pb.gz")
-	defer f.Close()
-	runtime.GC()
-	pprof.WriteHeapProfile(f);
 }
