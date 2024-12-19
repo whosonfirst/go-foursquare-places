@@ -52,6 +52,9 @@ func main() {
 	var start_after int64
 
 	var profile bool
+	var mem_profile string
+	var cpu_profile string
+	
 	var verbose bool
 
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
@@ -66,11 +69,14 @@ func main() {
 	flag.BoolVar(&verbose, "verbose", false, "Enable verbose (debug) logging.")
 	flag.BoolVar(&profile, "profile", false, "Enable pprof profiling.")
 
+	flag.StringVar(&mem_profile, "mem-profile", "memprofile.pb.gz", "...")
+	flag.StringVar(&cpu_profile, "cpu-profile", "cpuprofile.pb.gz", "...")
+	
 	flag.Parse()
 
 	if profile {
 
-		cpu_f, _ := os.Create("memprofile.pb.gz")
+		cpu_f, _ := os.Create(cpu_profile)
 		defer cpu_f.Close()
 
 		err := pprof.StartCPUProfile(cpu_f)
@@ -83,7 +89,7 @@ func main() {
 
 			pprof.StopCPUProfile()
 
-			f, _ := os.Create("memprofile.pb.gz")
+			f, _ := os.Create(mem_profile)
 			defer f.Close()
 			runtime.GC()
 			pprof.WriteHeapProfile(f)
