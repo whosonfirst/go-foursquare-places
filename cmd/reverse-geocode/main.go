@@ -23,6 +23,8 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"sync/atomic"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 	_ "github.com/whosonfirst/go-reader-database-sql"
@@ -54,7 +56,7 @@ func main() {
 	var profile bool
 	var mem_profile string
 	var cpu_profile string
-	
+
 	var verbose bool
 
 	flag.StringVar(&spatial_database_uri, "spatial-database-uri", "", "A registered whosonfirst/go-whosonfirst-spatial/database/SpatialDatabase URI to use for perforning reverse geocoding tasks.")
@@ -71,7 +73,7 @@ func main() {
 
 	flag.StringVar(&mem_profile, "mem-profile", "memprofile.pb.gz", "...")
 	flag.StringVar(&cpu_profile, "cpu-profile", "cpuprofile.pb.gz", "...")
-	
+
 	flag.Parse()
 
 	if profile {
@@ -296,6 +298,21 @@ func main() {
 	}
 
 	counter := int64(0)
+	processed := int64(0)
+	timing := int64(0)
+
+	ticker := time.NewTicker(time.Duration(10) * time.Second)
+	defer ticker.Stop()
+
+	go func() {
+
+		for {
+			select {
+			case <-ticker.C:
+				slog.Info("Count", "counter", counter, "processed", processed, "t", float64(timing)/float64(processed))
+			}
+		}
+	}()
 
 	for pl, err := range e.Emit(ctx) {
 
@@ -317,8 +334,15 @@ func main() {
 
 		go func(pl *places.Place) {
 
+			t1 := time.Now()
+
 			defer func() {
 				throttle <- true
+
+				t2 := time.Since(t1)
+				atomic.AddInt64(&timing, t2.Milliseconds())
+				atomic.AddInt64(&processed, 1)
+
 				wg.Done()
 			}()
 

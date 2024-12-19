@@ -153,7 +153,9 @@ func (e *CSVEmitter) Emit(ctx context.Context) iter.Seq2[*places.Place, error] {
 
 			pl.Categories = categories
 
-			yield(pl, nil)
+			if !yield(pl, nil) {
+				return
+			}
 		}
 	}
 }
