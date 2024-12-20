@@ -355,6 +355,8 @@ func main() {
 	ticker := time.NewTicker(time.Duration(10) * time.Second)
 	defer ticker.Stop()
 
+	start := time.Now()
+	
 	go func() {
 
 		for {
@@ -370,7 +372,7 @@ func main() {
 
 				last_processed = p
 				
-				slog.Info("Count", "counter", counter, "processed", p, "diff", diff, "t", float64(timing)/float64(p))
+				slog.Info("Status", "counter", counter, "processed", p, "diff", diff, "avg t2p", float64(timing)/float64(p), "elaspsed", time.Since(start))
 			}
 		}
 	}()
