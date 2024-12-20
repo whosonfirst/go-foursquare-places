@@ -298,6 +298,7 @@ func main() {
 	}
 
 	counter := int64(0)
+	last_processed := int64(0)
 	processed := int64(0)
 	timing := int64(0)
 
@@ -309,7 +310,17 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				slog.Info("Count", "counter", counter, "processed", processed, "t", float64(timing)/float64(processed))
+
+				p := atomic.LoadInt64(&processed)
+				diff := int64(0)
+
+				if last_processed > 0 {
+					diff = p - last_processed
+				}
+
+				last_processed = p
+				
+				slog.Info("Count", "counter", counter, "processed", p, "diff", diff, "t", float64(timing)/float64(p))
 			}
 		}
 	}()
