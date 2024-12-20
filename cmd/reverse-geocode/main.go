@@ -30,6 +30,8 @@ import (
 	_ "github.com/whosonfirst/go-reader-database-sql"
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
 
+	jsoniter "github.com/json-iterator/go"
+	"github.com/dgraph-io/ristretto/v2"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/sfomuseum/go-csvdict/v2"
@@ -103,6 +105,29 @@ func main() {
 		slog.SetLogLoggerLevel(slog.LevelDebug)
 	}
 
+	// START OF json wah-wah...
+	
+
+	// https://pkg.go.dev/github.com/paulmach/orb/geojson#pkg-variables
+	// https://github.com/json-iterator/go
+	//
+	// "Even the most widely used json-iterator will severely degrade in generic (no-schema) or big-volume JSON serialization and deserialization."
+	// https://github.com/bytedance/sonic/blob/main/INTRODUCTION.md
+	//
+	// I have not verified that claim either way but since we're not trafficing in "big-volume" JSON files
+	// I am just going to see how this (json-iterator) goes for now.
+
+	var c = jsoniter.Config{
+		EscapeHTML:              true,
+		SortMapKeys:             false,
+		MarshalFloatWith6Digits: true,
+	}.Froze()
+
+	geojson.CustomJSONMarshaler = c
+	geojson.CustomJSONUnmarshaler = c
+
+	// END OF json wah-wah...
+	
 	ctx := context.Background()
 
 	e, err := emitter.NewEmitter(ctx, emitter_uri)
@@ -146,6 +171,10 @@ func main() {
 
 	resolver, err := hierarchy.NewPointInPolygonHierarchyResolver(ctx, resolver_opts)
 
+	if err != nil {
+		log.Fatal(err)
+	}
+	
 	mu := new(sync.RWMutex)
 	wg := new(sync.WaitGroup)
 
@@ -155,6 +184,16 @@ func main() {
 		throttle <- true
 	}
 
+	parent_cache, err := ristretto.NewCache(&ristretto.Config[string, string]{
+		NumCounters: 1e7,     // number of keys to track frequency of (10M).
+		MaxCost:     1 << 30, // maximum cost of cache (1GB).
+		BufferItems: 64,      // number of keys per Get buffer.
+	})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	
 	var csv_wr *csvdict.Writer
 
 	i64_to_string := func(i64_list []int64) []string {
@@ -241,57 +280,68 @@ func main() {
 
 		if parent_spr != nil {
 
-			p_id, err := strconv.ParseInt(parent_spr.Id(), 10, 64)
+			k := parent_spr.Id()
 
-			if err != nil {
-				slog.Error("Failed to parse parse parent ID", "id", parent_spr.Id(), "error", err)
-				return err
-			}
+			v, exists := parent_cache.Get(k)
 
-			parent_id = p_id
-			belongs_to = parent_spr.BelongsTo()
-
-			parent_body, err := wof_reader.LoadBytes(ctx, properties_reader, p_id)
-
-			if err != nil {
-				slog.Warn("Failed to derive record from properties reader", "id", p_id, "error", err)
+			if exists {
+				// slog.Info("GET", "k", k, "v", v)
+				str_hierarchies = v
 			} else {
-
-				hierarchies := properties.Hierarchies(parent_body)
-
-				candidates := []string{
-					"neighbourhood_id",
-					"locality_id",
-					"region_id",
-					"country_id",
-					"continent_id",
+				
+				p_id, err := strconv.ParseInt(parent_spr.Id(), 10, 64)
+				
+				if err != nil {
+					slog.Error("Failed to parse parse parent ID", "id", parent_spr.Id(), "error", err)
+					return err
 				}
-
-				str_hier := make([]string, len(hierarchies))
-
-				for i, h := range hierarchies {
-
-					// colon-separated list
-					hier_csv := make([]string, len(candidates))
-
-					for j, k := range candidates {
-
-						id, exists := h[k]
-						v := ""
-
-						if exists {
-							v = strconv.FormatInt(id, 10)
-						}
-
-						hier_csv[j] = v
+				
+				parent_id = p_id
+				belongs_to = parent_spr.BelongsTo()
+				
+				parent_body, err := wof_reader.LoadBytes(ctx, properties_reader, p_id)
+				
+				if err != nil {
+					slog.Warn("Failed to derive record from properties reader", "id", p_id, "error", err)
+				} else {
+					
+					hierarchies := properties.Hierarchies(parent_body)
+					
+					candidates := []string{
+						"neighbourhood_id",
+						"locality_id",
+						"region_id",
+						"country_id",
+						"continent_id",
 					}
-
-					str_hier[i] = strings.Join(hier_csv, ":")
+					
+					str_hier := make([]string, len(hierarchies))
+					
+					for i, h := range hierarchies {
+						
+						// colon-separated list
+						hier_csv := make([]string, len(candidates))
+						
+						for j, k := range candidates {
+							
+							id, exists := h[k]
+							v := ""
+							
+							if exists {
+								v = strconv.FormatInt(id, 10)
+							}
+							
+							hier_csv[j] = v
+						}
+						
+						str_hier[i] = strings.Join(hier_csv, ":")
+					}
+					
+					str_hierarchies = strings.Join(str_hier, ",")
 				}
 
-				str_hierarchies = strings.Join(str_hier, ",")
+				parent_cache.Set(k, str_hierarchies, 1)
 			}
-
 		}
 
 		return nil

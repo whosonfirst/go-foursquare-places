@@ -4,6 +4,7 @@ go 1.23.3
 
 require (
 	github.com/aaronland/go-roster v1.0.0
+	github.com/dgraph-io/ristretto/v2 v2.0.1
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/paulmach/orb v0.11.1
 	github.com/sfomuseum/go-csvdict/v2 v2.0.0
