@@ -4,4 +4,5 @@ LDFLAGS=-s -w
 cli:
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/emit cmd/emit/main.go
 	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/reverse-geocode cmd/reverse-geocode/main.go
+	go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/sort cmd/sort/main.go
 	# go build -mod $(GOMOD) -ldflags="$(LDFLAGS)" -o bin/pip cmd/pip/main.go

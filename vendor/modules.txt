@@ -365,6 +365,11 @@ github.com/cenkalti/backoff/v4
 # github.com/cespare/xxhash/v2 v2.3.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
+# github.com/dgraph-io/ristretto/v2 v2.0.1
+## explicit; go 1.21
+github.com/dgraph-io/ristretto/v2
+github.com/dgraph-io/ristretto/v2/z
+github.com/dgraph-io/ristretto/v2/z/simd
 # github.com/dhconnelly/rtreego v1.2.0
 ## explicit; go 1.13
 github.com/dhconnelly/rtreego
@@ -536,7 +541,7 @@ github.com/rivo/uniseg
 # github.com/schollz/progressbar/v3 v3.13.1
 ## explicit; go 1.13
 github.com/schollz/progressbar/v3
-# github.com/sfomuseum/go-csvdict/v2 v2.0.0
+# github.com/sfomuseum/go-csvdict/v2 v2.0.1
 ## explicit; go 1.23
 github.com/sfomuseum/go-csvdict/v2
 # github.com/sfomuseum/go-database v0.0.10
@@ -587,7 +592,7 @@ github.com/whosonfirst/go-sanitize
 # github.com/whosonfirst/go-whosonfirst-crawl v0.2.2
 ## explicit; go 1.18
 github.com/whosonfirst/go-whosonfirst-crawl
-# github.com/whosonfirst/go-whosonfirst-database v0.0.2
+# github.com/whosonfirst/go-whosonfirst-database v0.0.8
 ## explicit; go 1.23.3
 github.com/whosonfirst/go-whosonfirst-database/sql/tables
 # github.com/whosonfirst/go-whosonfirst-export/v2 v2.8.3
@@ -641,11 +646,11 @@ github.com/whosonfirst/go-whosonfirst-spatial/filter
 github.com/whosonfirst/go-whosonfirst-spatial/geo
 github.com/whosonfirst/go-whosonfirst-spatial/hierarchy
 github.com/whosonfirst/go-whosonfirst-spatial/hierarchy/filter
-# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.6.2
+# github.com/whosonfirst/go-whosonfirst-spatial-pmtiles v0.7.0
 ## explicit; go 1.23.3
 github.com/whosonfirst/go-whosonfirst-spatial-pmtiles
 github.com/whosonfirst/go-whosonfirst-spatial-pmtiles/cache
-# github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.11.1
+# github.com/whosonfirst/go-whosonfirst-spatial-sqlite v0.12.0
 ## explicit; go 1.23.3
 github.com/whosonfirst/go-whosonfirst-spatial-sqlite
 github.com/whosonfirst/go-whosonfirst-spatial-sqlite/wkttoorb
@@ -983,7 +988,7 @@ modernc.org/mathutil
 # modernc.org/memory v1.8.0
 ## explicit; go 1.18
 modernc.org/memory
-# modernc.org/sqlite v1.34.2
+# modernc.org/sqlite v1.34.3
 ## explicit; go 1.21
 modernc.org/sqlite
 modernc.org/sqlite/lib
