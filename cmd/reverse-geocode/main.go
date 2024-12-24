@@ -195,6 +195,8 @@ func main() {
 
 	var csv_wr *csvdict.Writer
 
+	// START OF put me a function that takes: id, name, lat, lon, resolver, parent_cache, *csvdict.Writer
+	
 	i64_to_string := func(i64_list []int64) []string {
 
 		str_list := make([]string, len(i64_list))
@@ -209,7 +211,7 @@ func main() {
 	i64_to_csv := func(i64_list []int64) string {
 		return strings.Join(i64_to_string(i64_list), ",")
 	}
-
+	
 	process_place := func(ctx context.Context, pl *places.Place) error {
 
 		parent_id := int64(-1)
@@ -353,6 +355,8 @@ func main() {
 		return nil
 	}
 
+	// END OF put me a function that takes: id, name, lat, lon, parent_cache, *csvdict.Writer
+	
 	counter := int64(0)
 	last_processed := int64(0)
 	processed := int64(0)
