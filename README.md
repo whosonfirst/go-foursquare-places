@@ -183,6 +183,12 @@ ef7d80b8e93940a489d2eecb,1729444305,"102191575,85633793,102080987,404484737,8568
 
 Note: The details of the `-spatial-database-uri` flag are outside the scope of this document. Please consult [whosonfirst/go-whosonfirst-spatial](https://github.com/whosonfirst/go-whosonfirst-spatial?tab=readme-ov-file#database-implementations) for details.
 
+## Data
+
+```
+$> aws s3 sync --no-sign-request s3://fsq-os-places-us-east-1/release/dt=2024-12-03/places/parquet /usr/local/data/4sq/parquet/
+```
+
 ## See also
 
 * https://docs.foursquare.com/data-products/docs/places-os-data-schema
