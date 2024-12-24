@@ -4,28 +4,28 @@ import (
 	_ "context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"log/slog"
+	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
-	"net/http"
-	"io"
-	"strconv"
 	"time"
-	
+
 	"github.com/sfomuseum/go-csvdict/v2"
 )
 
 func main() {
 
 	flag.Parse()
-	
+
 	countries := new(sync.Map)
 	writers := make(map[string]*csvdict.Writer)
 
 	counter := int64(0)
-	
+
 	workers := 200
 	throttle := make(chan bool, workers)
 
@@ -44,7 +44,7 @@ func main() {
 			}
 		}
 	}()
-				
+
 	derive_country := func(id int64) (string, error) {
 
 		v, exists := countries.Load(id)
@@ -65,7 +65,7 @@ func main() {
 		if rsp.StatusCode != http.StatusOK {
 			return "", fmt.Errorf("%s %d %s", url, rsp.StatusCode, rsp.Status)
 		}
-		
+
 		body, err := io.ReadAll(rsp.Body)
 
 		if err != nil {
@@ -78,7 +78,7 @@ func main() {
 		// slog.Info("Country", "url", url, "code", country)
 		return country, nil
 	}
-	
+
 	for _, path := range flag.Args() {
 
 		r, err := csvdict.NewReaderFromPath(path)
@@ -89,45 +89,45 @@ func main() {
 
 		wg := new(sync.WaitGroup)
 		mu := new(sync.RWMutex)
-		
+
 		for row, err := range r.Iterate() {
 
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			<- throttle
+			<-throttle
 			wg.Add(1)
 
 			go func(row map[string]string) {
 
-				defer func(){
+				defer func() {
 					atomic.AddInt64(&counter, 1)
 					throttle <- true
 					wg.Done()
 				}()
-				
+
 				hiers := strings.Split(row["wof:hierarchies"], ",")
-				
+
 				for _, str_h := range hiers {
-					
+
 					country_id := int64(-1)
 					str_country := "XY"
-					
+
 					h := strings.Split(str_h, ":")
-					
+
 					if len(h) >= 3 && h[3] != "" && h[3] != "-1" {
 						str_country = h[3]
-						
+
 						v, err := strconv.ParseInt(str_country, 10, 64)
-						
+
 						if err != nil {
 							slog.Error(err.Error())
 						} else {
-							
+
 							country_id = v
 							code, err := derive_country(country_id)
-							
+
 							if err != nil {
 								slog.Error(err.Error())
 							} else {
@@ -139,11 +139,11 @@ func main() {
 					mu.RLock()
 					csv_wr, exists := writers[str_country]
 					mu.RUnlock()
-					
+
 					if !exists {
-						
+
 						mu.Lock()
-						
+
 						csv_path := fmt.Sprintf("/Users/asc/data/foursquare-wof-sorted/foursquare-wof-%s.csv", str_country)
 						wr, err := csvdict.NewWriterFromPath(csv_path)
 
@@ -161,7 +161,7 @@ func main() {
 					// slog.Info("Write", "country", str_country, "id", row["4sq:id"])
 					csv_wr.WriteRow(row)
 				}
-				
+
 			}(row)
 		}
 
@@ -171,6 +171,6 @@ func main() {
 			wr.Flush()
 		}
 
-		slog.Info("Complete", "path", path, "count", atomic.LoadInt64(&counter))		
+		slog.Info("Complete", "path", path, "count", atomic.LoadInt64(&counter))
 	}
 }

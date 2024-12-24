@@ -30,8 +30,8 @@ import (
 	_ "github.com/whosonfirst/go-reader-database-sql"
 	_ "github.com/whosonfirst/go-whosonfirst-spatial-pmtiles"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/dgraph-io/ristretto/v2"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 	"github.com/sfomuseum/go-csvdict/v2"
@@ -106,7 +106,6 @@ func main() {
 	}
 
 	// START OF json wah-wah...
-	
 
 	// https://pkg.go.dev/github.com/paulmach/orb/geojson#pkg-variables
 	// https://github.com/json-iterator/go
@@ -127,7 +126,7 @@ func main() {
 	geojson.CustomJSONUnmarshaler = c
 
 	// END OF json wah-wah...
-	
+
 	ctx := context.Background()
 
 	e, err := emitter.NewEmitter(ctx, emitter_uri)
@@ -174,7 +173,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	mu := new(sync.RWMutex)
 	wg := new(sync.WaitGroup)
 
@@ -193,7 +192,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	
+
 	var csv_wr *csvdict.Writer
 
 	i64_to_string := func(i64_list []int64) []string {
@@ -280,6 +279,15 @@ func main() {
 
 		if parent_spr != nil {
 
+			p_id, err := strconv.ParseInt(parent_spr.Id(), 10, 64)
+
+			if err != nil {
+				slog.Error("Failed to parse parse parent ID", "id", parent_spr.Id(), "error", err)
+				return err
+			}
+
+			parent_id = p_id
+
 			k := parent_spr.Id()
 
 			v, exists := parent_cache.Get(k)
@@ -288,55 +296,53 @@ func main() {
 				// slog.Info("GET", "k", k, "v", v)
 				str_hierarchies = v
 			} else {
-				
-				p_id, err := strconv.ParseInt(parent_spr.Id(), 10, 64)
-				
-				if err != nil {
-					slog.Error("Failed to parse parse parent ID", "id", parent_spr.Id(), "error", err)
-					return err
-				}
-				
-				parent_id = p_id
+
 				belongs_to = parent_spr.BelongsTo()
-				
+
 				parent_body, err := wof_reader.LoadBytes(ctx, properties_reader, p_id)
-				
+
 				if err != nil {
 					slog.Warn("Failed to derive record from properties reader", "id", p_id, "error", err)
 				} else {
-					
+
 					hierarchies := properties.Hierarchies(parent_body)
-					
+
 					candidates := []string{
+						"microhood_id",
 						"neighbourhood_id",
+						"macrohood_id",
+						"borough_id",
 						"locality_id",
+						"localadmin_id",
+						"county_id",
 						"region_id",
 						"country_id",
 						"continent_id",
+						"empire_id",
 					}
-					
+
 					str_hier := make([]string, len(hierarchies))
-					
+
 					for i, h := range hierarchies {
-						
+
 						// colon-separated list
 						hier_csv := make([]string, len(candidates))
-						
+
 						for j, k := range candidates {
-							
+
 							id, exists := h[k]
 							v := ""
-							
+
 							if exists {
 								v = strconv.FormatInt(id, 10)
 							}
-							
+
 							hier_csv[j] = v
 						}
-						
+
 						str_hier[i] = strings.Join(hier_csv, ":")
 					}
-					
+
 					str_hierarchies = strings.Join(str_hier, ",")
 				}
 
@@ -356,7 +362,7 @@ func main() {
 	defer ticker.Stop()
 
 	start := time.Now()
-	
+
 	go func() {
 
 		for {
@@ -371,7 +377,7 @@ func main() {
 				}
 
 				last_processed = p
-				
+
 				slog.Info("Status", "counter", counter, "processed", p, "diff", diff, "avg t2p", float64(timing)/float64(p), "elaspsed", time.Since(start))
 			}
 		}
