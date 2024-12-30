@@ -4,7 +4,7 @@ Go package for working with the Foursquare Places dataset.
 
 ## Important
 
-This is work in progress. Documentation and interfaces are incomplete and subject to change.
+This package has been superseded by [whosonfirst/go-whosonfirst-external](https://github.com/whosonfirst/go-whosonfirst-external).
 
 ## Places
 
